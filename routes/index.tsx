@@ -15,7 +15,7 @@ export default function Home() {
         </h1>
         <div class="my-4 space-y-2">
           <p class="text-gray-600 text-center">
-            R&D Software Engineer{"  "}
+            R&amp;D Software Engineer{"  "}
             <text
               x="64"
               y="64"
@@ -27,7 +27,7 @@ export default function Home() {
               👨‍💻
             </text>
             <br />
-            at Elid Sales & Marketing Sdn Bhd
+            at Elid Sales &amp; Marketing Sdn Bhd
           </p>
           <p class="text-gray-600 text-center">Petaling Jaya, Malaysia</p>
         </div>
