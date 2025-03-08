@@ -15,7 +15,10 @@ export default function Home() {
         </h1>
         {/* Contacts */}
         <div class="flex space-x-4 mt-4">
-          <a href="mailto:yasirsoleh@gmail.com">
+          <a
+            href="mailto:yasirsoleh@gmail.com"
+            class="text-gray-800 hover:text-gray-600 hover:bg-gray-200 rounded-full p-2"
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="24"
@@ -32,7 +35,10 @@ export default function Home() {
               <path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-4 8" />
             </svg>
           </a>
-          <a href="https://github.com/yasirsoleh">
+          <a
+            href="https://github.com/yasirsoleh"
+            class="text-gray-800 hover:text-gray-600 hover:bg-gray-200 rounded-full p-2"
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="24"
