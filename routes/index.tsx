@@ -13,7 +13,24 @@ export default function Home() {
         <h1 class="mt-4 text-4xl font-bold text-center">
           Mohammad Alif Yasir bin Soleh
         </h1>
-        {/* Contacts */}
+        <div class="my-4 space-y-2">
+          <p class="text-gray-600 text-center">
+            R&D Software Engineer{"  "}
+            <text
+              x="64"
+              y="64"
+              font-size="96"
+              text-anchor="middle"
+              dominant-baseline="middle"
+              font-family="serif"
+            >
+              👨‍💻
+            </text>
+            <br />
+            at Elid Sales & Marketing Sdn Bhd
+          </p>
+          <p class="text-gray-600 text-center">Petaling Jaya, Malaysia</p>
+        </div>
         <div class="flex space-x-4 mt-4">
           <a
             href="mailto:yasirsoleh@gmail.com"
