@@ -1,0 +1,16 @@
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: yasirsoleh-my
+  namespace: cert-manager
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: yasirsoleh@gmail.com
+    privateKeySecretRef:
+      name: yasirsolehmy.letsencrypt.key.tls
+    solvers:
+    - selector: {}
+      http01:
+        ingress:
+          class: traefik

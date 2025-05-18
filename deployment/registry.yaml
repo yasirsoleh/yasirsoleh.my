@@ -1,0 +1,97 @@
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: registry-yasirsoleh-my
+  namespace: cert-manager
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: yasirsoleh@gmail.com
+    privateKeySecretRef:
+      name: registryyasirsolehmy.letsencrypt.key.tls
+    solvers:
+    - selector: {}
+      http01:
+        ingress:
+          class: traefik
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: registry
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: registry
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: registry
+  template:
+    metadata:
+      labels:
+        app: registry
+    spec:
+      containers:
+      - name: registry
+        image: registry:2
+        ports:
+        - containerPort: 5000
+        volumeMounts:
+        - name: registry-storage
+          mountPath: /var/lib/registry
+        - name: registry-auth
+          mountPath: /auth
+      volumes:
+      - name: registry-storage
+        persistentVolumeClaim:
+          claimName: registry
+      - name: registry-auth
+        secret:
+          secretName: registry-htpasswd
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: registry
+  namespace: default
+spec:
+  selector:
+    app: registry
+  ports:
+  - protocol: TCP
+    port: 5000
+    targetPort: 5000
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: registry
+  annotations:
+    spec.ingressClassName: "traefik"
+    cert-manager.io/cluster-issuer: registry-yasirsoleh-my
+spec:
+  tls:
+    - secretName: registryyasirsolehmy.letsencrypt.key.tls
+      hosts:
+        - registry.yasirsoleh.my
+  rules:
+    - host: registry.yasirsoleh.my
+      http:
+        paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: registry
+              port:
+                number: 5000
