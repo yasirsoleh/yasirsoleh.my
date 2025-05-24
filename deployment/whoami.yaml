@@ -38,9 +38,9 @@ kind: Ingress
 metadata:
   name: whoami
   annotations:
-    spec.ingressClassName: "traefik"
-    cert-manager.io/cluster-issuer: letsencrypt-certificate
+    cert-manager.io/cluster-issuer: yasirsoleh-my
 spec:
+  ingressClassName: traefik
   tls:
     - secretName: yasirsolehmy.letsencrypt.key.tls
       hosts:

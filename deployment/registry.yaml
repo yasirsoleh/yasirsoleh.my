@@ -77,9 +77,9 @@ kind: Ingress
 metadata:
   name: registry
   annotations:
-    spec.ingressClassName: "traefik"
     cert-manager.io/cluster-issuer: registry-yasirsoleh-my
 spec:
+  ingressClassName: traefik
   tls:
     - secretName: registryyasirsolehmy.letsencrypt.key.tls
       hosts:
