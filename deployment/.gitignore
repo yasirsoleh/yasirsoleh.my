@@ -1,2 +1,2 @@
-registry-auth/
-postgres-auth/
+.credentials
+registry-htpasswd

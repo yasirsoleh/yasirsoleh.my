@@ -9,7 +9,7 @@ podman run --entrypoint htpasswd registry:2 -Bbn yasirsoleh password > registry-
 ## Create a secret for the password file
 
 ```
-kubectl create secret generic registry-htpasswd   --from-file=htpasswd=./registry-auth/htpasswd
+kubectl create secret generic registry-htpasswd   --from-file=htpasswd=./registry-htpasswd
 ```
 
 ## Login to the registry
