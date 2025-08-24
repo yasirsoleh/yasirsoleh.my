@@ -13,6 +13,7 @@ import {
   Input,
   Button,
 } from "@mantine/core";
+import { useMediaQuery } from "@mantine/hooks";
 import { modals } from "@mantine/modals";
 import {
   IconAlertCircle,
@@ -62,7 +63,7 @@ function PostList() {
   const searchQuery = search.contents || "";
   const pageSize = search.page_size || 3;
   const [contentSearch, setContentSearch] = useState<string>(searchQuery);
-
+  const mobile = useMediaQuery("(max-width: 768px)");
   const [posts, setPosts] = useState<PostList | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -171,6 +172,7 @@ function PostList() {
           <Button
             leftSection={<IconPlus size="1rem" />}
             onClick={() => navigate({ to: "/posts/create" })}
+            variant="subtle"
           >
             New Post
           </Button>
@@ -218,7 +220,7 @@ function PostList() {
             <Paper key={post.id} shadow="xs" p="lg" radius="md">
               <div
                 style={{
-                  display: "flex",
+                  display: mobile ? "block" : "flex",
                   alignItems: "center",
                   gap: "0.5rem",
                   marginBottom: "1rem",
@@ -231,7 +233,11 @@ function PostList() {
                 </Group>
 
                 {accountId && accountId === post.account_id && (
-                  <Group>
+                  <Group
+                    style={{
+                      marginTop: mobile ? "0.5rem" : 0,
+                    }}
+                  >
                     <Button
                       size="xs"
                       variant="light"

@@ -11,6 +11,7 @@ import {
   Badge,
   Divider,
 } from "@mantine/core";
+import { useMediaQuery } from "@mantine/hooks";
 import {
   IconBrandGithub,
   IconBrandGitlab,
@@ -25,6 +26,7 @@ export const Route = createFileRoute("/_main/")({
 });
 
 function Index() {
+  const mobile = useMediaQuery("(max-width: 768px)");
   return (
     <Container size="xl" py="xl">
       <Stack gap="xl">
@@ -120,14 +122,28 @@ function Index() {
           </Title>
           <Stack gap="xl">
             <div>
-              <Group justify="space-between" align="flex-start" mb="sm">
+              <Group
+                justify="space-between"
+                align="flex-start"
+                mb="sm"
+                style={{
+                  display: mobile ? "block" : "flex",
+                }}
+              >
                 <div>
                   <Title order={3}>R&D Software Engineer</Title>
                   <Text fw={500} c="gray">
                     Elid Sales & Marketing Sdn. Bhd.
                   </Text>
                 </div>
-                <Badge variant="light">September 2022 - Current</Badge>
+                <Badge
+                  variant="light"
+                  style={{
+                    marginTop: mobile ? "0.5rem" : 0,
+                  }}
+                >
+                  September 2022 - Current
+                </Badge>
               </Group>
               <List spacing="xs">
                 <List.Item>
@@ -146,14 +162,28 @@ function Index() {
             <Divider />
 
             <div>
-              <Group justify="space-between" align="flex-start" mb="sm">
+              <Group
+                justify="space-between"
+                align="flex-start"
+                mb="sm"
+                style={{
+                  display: mobile ? "block" : "flex",
+                }}
+              >
                 <div>
                   <Title order={3}>Internship - Full Stack Developer</Title>
                   <Text fw={500} c="gray">
                     EfiChain Solutions Sdn. Bhd.
                   </Text>
                 </div>
-                <Badge variant="light">March 2022 - August 2022</Badge>
+                <Badge
+                  variant="light"
+                  style={{
+                    marginTop: mobile ? "0.5rem" : 0,
+                  }}
+                >
+                  March 2022 - August 2022
+                </Badge>
               </Group>
               <List spacing="xs">
                 <List.Item>
@@ -175,7 +205,14 @@ function Index() {
           <Title order={2} mb="md">
             EDUCATIONAL HISTORY
           </Title>
-          <Group justify="space-between" align="flex-start" mb="sm">
+          <Group
+            justify="space-between"
+            align="flex-start"
+            mb="sm"
+            style={{
+              display: mobile ? "block" : "flex",
+            }}
+          >
             <div>
               <Title order={3}>
                 Bachelor of Computer Science (Software Engineering)
@@ -184,7 +221,14 @@ function Index() {
                 Universiti Malaysia Pahang
               </Text>
             </div>
-            <Badge variant="light">September 2018 - August 2022</Badge>
+            <Badge
+              variant="light"
+              style={{
+                marginTop: mobile ? "0.5rem" : 0,
+              }}
+            >
+              September 2018 - August 2022
+            </Badge>
           </Group>
           <List spacing="xs">
             <List.Item>CGPA: 3.57</List.Item>
@@ -203,22 +247,46 @@ function Index() {
             CERTIFICATIONS
           </Title>
           <Stack gap="md">
-            <Group justify="space-between">
+            <Group
+              justify="space-between"
+              style={{
+                display: mobile ? "block" : "flex",
+              }}
+            >
               <div>
                 <Text fw={500}>Certified Kubernetes Administrator</Text>
                 <Text c="dimmed">Cloud Native Computing Foundation</Text>
               </div>
-              <Badge variant="light">August 2024</Badge>
+              <Badge
+                variant="light"
+                style={{
+                  marginTop: mobile ? "0.5rem" : 0,
+                }}
+              >
+                August 2024
+              </Badge>
             </Group>
 
             <Divider />
 
-            <Group justify="space-between">
+            <Group
+              justify="space-between"
+              style={{
+                display: mobile ? "block" : "flex",
+              }}
+            >
               <div>
                 <Text fw={500}>Certified DevOps Foundation</Text>
                 <Text c="dimmed">CCSD Council</Text>
               </div>
-              <Badge variant="light">July 2024</Badge>
+              <Badge
+                variant="light"
+                style={{
+                  marginTop: mobile ? "0.5rem" : 0,
+                }}
+              >
+                July 2024
+              </Badge>
             </Group>
           </Stack>
         </Paper>
