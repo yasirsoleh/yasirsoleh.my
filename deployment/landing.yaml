@@ -37,7 +37,7 @@ spec:
             createdb -h postgres.default.svc.cluster.local -U $POSTGRES_USER landing || echo "Database already exists"
       containers:
       - name: landing
-        image: registry.yasirsoleh.my/landing:v0.0.1
+        image: registry.yasirsoleh.my/landing:v0.0.2
         ports:
         - containerPort: 3000
         env:
