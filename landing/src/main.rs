@@ -15,6 +15,11 @@ async fn main() {
         .await
         .expect("can't connect to database");
 
+    sqlx::migrate!("src/db/migrations")
+        .run(&pool)
+        .await
+        .expect("can't run database migrations");
+
     let jwt_secret = std::env::var("JWT_SECRET").unwrap_or_else(|_| "secret".to_string());
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();

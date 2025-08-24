@@ -3,7 +3,7 @@
 ## Generate password file
 
 ```
-podman run --entrypoint htpasswd registry:2 -Bbn yasirsoleh password > registry-auth/htpasswd
+podman run --rm httpd:2.4-alpine htpasswd -Bbn yasirsoleh password > registry-htpasswd
 ```
 
 ## Create a secret for the password file

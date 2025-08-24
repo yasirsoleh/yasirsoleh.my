@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: landing
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: landing
+  template:
+    metadata:
+      labels:
+        app: landing
+    spec:
+      containers:
+      - name: landing
+        image: landing:v0.0.1
+        ports:
+        - containerPort: 3000
+        env:
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: postgres
+              key: POSTGRES_USER
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres
+              key: POSTGRES_PASSWORD
+        - name: DATABASE_URL
+          value: "postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@postgres-service:5432/yasirsoleh"
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: landing
+              key: JWT_SECRET
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: landing
+spec:
+  selector:
+    app: landing
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
+  type: ClusterIP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: landing
+  annotations:
+    cert-manager.io/cluster-issuer: yasirsoleh-my
+spec:
+  ingressClassName: traefik
+  tls:
+    - secretName: yasirsolehmy.letsencrypt.key.tls
+      hosts:
+        - yasirsoleh.my
+  rules:
+  - host: yasirsoleh.my
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: landing
+            port:
+              number: 80

@@ -167,13 +167,14 @@ function PostList() {
       >
         <Title order={1}>Posts</Title>
 
-        <Button
-          variant="outline"
-          onClick={() => navigate({ to: "/posts/create" })}
-          leftSection={<IconPlus size={20} />}
-        >
-          Create
-        </Button>
+        {authToken && (
+          <Button
+            leftSection={<IconPlus size="1rem" />}
+            onClick={() => navigate({ to: "/posts/create" })}
+          >
+            New Post
+          </Button>
+        )}
       </div>
 
       {loading && <LoadingOverlay visible />}

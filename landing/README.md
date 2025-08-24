@@ -20,3 +20,15 @@ podman run --name pgadmin -e 'PGADMIN_DEFAULT_EMAIL=pgadmin@mailinator.com' -e '
 cd db
 sqlx migrate run
 ```
+
+### Build
+
+```
+podman build -t registry.yasirsoleh.my/landing:v0.0.0 .
+```
+
+### Push to remote registry
+
+```
+podman push registry.yasirsoleh.my/landing:v0.0.0
+```
