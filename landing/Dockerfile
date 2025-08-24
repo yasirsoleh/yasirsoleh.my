@@ -21,5 +21,5 @@ RUN cargo build --target x86_64-unknown-linux-musl --release
 FROM docker.io/alpine:3.14
 WORKDIR /app
 RUN apk add tzdata ca-certificates
-COPY --from=backend-build /app/target/release/landing /app
+COPY --from=backend-build /app/target/x86_64-unknown-linux-musl/release/landing /app/
 ENTRYPOINT ["/app/landing"]

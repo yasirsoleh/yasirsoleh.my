@@ -30,14 +30,14 @@ spec:
           - sh
           - -c
           - |
-            until pg_isready -h postgres-service -p 5432; do
+            until pg_isready -h postgres.default.svc.cluster.local -p 5432; do
               echo "Waiting for postgres..."
               sleep 2
             done
-            createdb -h postgres-service -U $POSTGRES_USER landing || echo "Database already exists"
+            createdb -h postgres.default.svc.cluster.local -U $POSTGRES_USER landing || echo "Database already exists"
       containers:
       - name: landing
-        image: landing:v0.0.1
+        image: registry.yasirsoleh.my/landing:v0.0.1
         ports:
         - containerPort: 3000
         env:
@@ -52,7 +52,7 @@ spec:
               name: postgres
               key: POSTGRES_PASSWORD
         - name: DATABASE_URL
-          value: "postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@postgres-service:5432/landing"
+          value: "postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@postgres.default.svc.cluster.local:5432/landing"
         - name: JWT_SECRET
           valueFrom:
             secretKeyRef:
