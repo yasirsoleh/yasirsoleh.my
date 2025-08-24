@@ -1,11 +1,11 @@
 use super::AppState;
-use crate::db::repositories::utils::ListParams;
+use crate::db::repositories::utils::RawListParams;
 
 pub async fn list_posts(
     axum::extract::State(state): axum::extract::State<AppState>,
-    axum::extract::Query(params): axum::extract::Query<ListParams>,
+    axum::extract::Query(params): axum::extract::Query<RawListParams>,
 ) -> impl axum::response::IntoResponse {
-    match state.queries.list_posts(params).await {
+    match state.queries.list_posts(params.into()).await {
         Ok(posts) => (
             axum::http::StatusCode::OK,
             axum::response::Json(serde_json::json!(posts)),

@@ -20,3 +20,5 @@ uuid = { version = "1.18.0", features = ["v4", "serde"] }
 serde_json = { version = "1.0" }
 jsonwebtoken = { version = "9.3" }
 dotenvy = { version = "0.15" }
+rust-embed = { version = "8.7.2" }
+mime_guess = "2"

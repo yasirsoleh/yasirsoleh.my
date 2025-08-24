@@ -35,7 +35,6 @@ pub fn setup_make_app(pool: sqlx::Pool<sqlx::Postgres>, jwt_secret: JwtSecret) -
         ));
 
     axum::Router::new()
-        .route("/", axum::routing::get(server_frontend))
         .route(
             "/api/accounts",
             axum::routing::post(accounts::create_account),
@@ -44,12 +43,44 @@ pub fn setup_make_app(pool: sqlx::Pool<sqlx::Postgres>, jwt_secret: JwtSecret) -
         .route("/api/posts", axum::routing::get(posts::list_posts))
         .route("/api/posts/{post_id}", axum::routing::get(posts::get_post))
         .merge(authenticated_routes)
+        .fallback_service(axum::routing::get(serve_frontend))
         .route_layer(axum::middleware::from_fn(print_middleware))
         .with_state(state)
 }
 
-async fn server_frontend() -> impl axum::response::IntoResponse {
-    axum::Json(serde_json::json!({"welp": "test"}))
+#[derive(rust_embed::RustEmbed)]
+#[folder = "src/frontend/dist"]
+struct ClientAssets;
+
+async fn serve_frontend(request: axum::extract::Request) -> impl axum::response::IntoResponse {
+    let path = request.uri().path().trim_start_matches('/');
+    let path = if path.is_empty() { "index.html" } else { path };
+    match ClientAssets::get(path) {
+        Some(asset) => {
+            let mime_type = mime_guess::from_path(path).first_or_octet_stream();
+
+            axum::response::Response::builder()
+                .header(axum::http::header::CONTENT_TYPE, mime_type.as_ref())
+                .header(axum::http::header::CACHE_CONTROL, "public, max-age=3600")
+                .status(axum::http::StatusCode::OK)
+                .body(axum::body::Body::from(asset.data))
+                .unwrap()
+        }
+        None => {
+            // Fallback to index.html for SPA routing
+            match ClientAssets::get("index.html") {
+                Some(index) => axum::response::Response::builder()
+                    .header(axum::http::header::CONTENT_TYPE, "text/html; charset=utf-8")
+                    .status(axum::http::StatusCode::OK)
+                    .body(axum::body::Body::from(index.data))
+                    .unwrap(),
+                None => axum::response::Response::builder()
+                    .status(axum::http::StatusCode::NOT_FOUND)
+                    .body(axum::body::Body::from("404 Not Found"))
+                    .unwrap(),
+            }
+        }
+    }
 }
 
 async fn print_middleware(
