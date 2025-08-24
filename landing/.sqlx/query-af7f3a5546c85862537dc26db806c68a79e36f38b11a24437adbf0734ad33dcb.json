@@ -1,0 +1,42 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            with updated_post as (\n                update posts\n                set updated_at = now(), contents = $1\n                where deleted_at is null and account_id = $2 and id = $3\n                returning id, account_id, contents\n            )\n            select p.id, p.account_id, a.account_name, p.contents\n            from updated_post p\n            join accounts a on p.account_id = a.id\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "account_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 2,
+        "name": "account_name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "contents",
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Uuid",
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "af7f3a5546c85862537dc26db806c68a79e36f38b11a24437adbf0734ad33dcb"
+}

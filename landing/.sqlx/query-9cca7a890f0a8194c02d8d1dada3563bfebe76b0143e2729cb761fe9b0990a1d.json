@@ -1,0 +1,41 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            with inserted_post as (\n                insert into posts (account_id, contents)\n                values ($1, $2)\n                returning id, account_id, contents\n            )\n            select p.id, p.account_id, a.account_name, p.contents\n            from inserted_post p\n            join accounts a on p.account_id = a.id\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "account_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 2,
+        "name": "account_name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "contents",
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Text"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "9cca7a890f0a8194c02d8d1dada3563bfebe76b0143e2729cb761fe9b0990a1d"
+}

@@ -12,6 +12,29 @@ spec:
       labels:
         app: landing
     spec:
+      initContainers:
+        - name: create-database
+          image: postgres:16-alpine
+          env:
+          - name: PGPASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: postgres
+                key: POSTGRES_PASSWORD
+          - name: POSTGRES_USER
+            valueFrom:
+              secretKeyRef:
+                name: postgres
+                key: POSTGRES_USER
+          command:
+          - sh
+          - -c
+          - |
+            until pg_isready -h postgres-service -p 5432; do
+              echo "Waiting for postgres..."
+              sleep 2
+            done
+            createdb -h postgres-service -U $POSTGRES_USER landing || echo "Database already exists"
       containers:
       - name: landing
         image: landing:v0.0.1
@@ -29,7 +52,7 @@ spec:
               name: postgres
               key: POSTGRES_PASSWORD
         - name: DATABASE_URL
-          value: "postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@postgres-service:5432/yasirsoleh"
+          value: "postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@postgres-service:5432/landing"
         - name: JWT_SECRET
           valueFrom:
             secretKeyRef:

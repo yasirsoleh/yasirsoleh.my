@@ -14,6 +14,7 @@ RUN rustup target add x86_64-unknown-linux-musl && \
     update-ca-certificates
 COPY Cargo.toml Cargo.lock ./
 COPY src ./src
+COPY .sqlx ./.sqlx
 COPY --from=frontend-build /usr/src/app/dist ./src/frontend/dist
 RUN cargo build --target x86_64-unknown-linux-musl --release
 
