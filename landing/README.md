@@ -21,6 +21,12 @@ cd db
 sqlx migrate run
 ```
 
+### Prepare Migration for Build
+
+```
+cargo sqlx prepare
+```
+
 ### Build
 
 ```
