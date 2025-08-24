@@ -1,0 +1,22 @@
+[package]
+name = "landing"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+tokio = { version = "1", features = ["full"] }
+sqlx = { version = "0.8", features = [
+    "runtime-tokio-rustls",
+    "postgres",
+    "migrate",
+    "uuid",
+    "chrono",
+] }
+axum = { version = "0.8", features = ["macros"] }
+chrono = { version = "0.4", features = ["serde"] }
+serde = { version = "1.0", default-features = true }
+bcrypt = { version = "0.17" }
+uuid = { version = "1.18.0", features = ["v4", "serde"] }
+serde_json = { version = "1.0" }
+jsonwebtoken = { version = "9.3" }
+dotenvy = { version = "0.15" }
