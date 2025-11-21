@@ -110,8 +110,8 @@ function Index() {
           <Text size="lg">
             Computer Science graduate from Universiti Malaysia Pahang.
             Specialized in cloud-based applications and embedded systems.
-            Currently seeking position in backend development, cloud
-            engineering, or system administration.
+            Currently working with BigPay Malaysia Sdn. Bhd. as a Backend
+            Engineer
           </Text>
         </Paper>
 
@@ -121,6 +121,34 @@ function Index() {
             WORK EXPERIENCE
           </Title>
           <Stack gap="xl">
+            <div>
+              <Group
+                justify="space-between"
+                align="flex-start"
+                mb="sm"
+                style={{
+                  display: mobile ? "block" : "flex",
+                }}
+              >
+                <div>
+                  <Title order={3}>Backend Engineer</Title>
+                  <Text fw={500} c="gray">
+                    BigPay Malaysia Sdn. Bhd.
+                  </Text>
+                </div>
+                <Badge
+                  variant="light"
+                  style={{
+                    marginTop: mobile ? "0.5rem" : 0,
+                  }}
+                >
+                  November 2025 - Present
+                </Badge>
+              </Group>
+            </div>
+
+            <Divider />
+
             <div>
               <Group
                 justify="space-between"
@@ -142,7 +170,7 @@ function Index() {
                     marginTop: mobile ? "0.5rem" : 0,
                   }}
                 >
-                  September 2022 - Current
+                  September 2022 - November 2025
                 </Badge>
               </Group>
               <List spacing="xs">
