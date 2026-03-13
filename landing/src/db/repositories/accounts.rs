@@ -98,4 +98,21 @@ impl Queries {
 
         Ok(account)
     }
+
+    pub async fn me(&self, account_id: sqlx::types::Uuid) -> Result<Account, Error> {
+        let account = sqlx::query_as!(
+            Account,
+            r#"
+            select id, email, account_name, email_verified_at, photo_identifier
+            from accounts
+            where deleted_at is null and id = $1
+            "#,
+            account_id,
+        )
+        .fetch_one(&self.pool)
+        .await
+        .map_err(|err| Error::from(err))?;
+
+        Ok(account)
+    }
 }

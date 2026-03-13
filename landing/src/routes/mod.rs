@@ -20,6 +20,7 @@ pub fn setup_make_app(pool: sqlx::Pool<sqlx::Postgres>, jwt_secret: JwtSecret) -
     };
 
     let authenticated_routes = axum::Router::new()
+        .route("/api/me", axum::routing::get(accounts::me))
         .route("/api/posts", axum::routing::post(posts::create_post))
         .route(
             "/api/posts/{post_id}",

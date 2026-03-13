@@ -105,7 +105,7 @@ function Index() {
         {/* Objective */}
         <Paper shadow="xs" p="xl" radius="md">
           <Title order={2} mb="md">
-            OBJECTIVE
+            ABOUT ME
           </Title>
           <Text size="lg">
             Computer Science graduate from Universiti Malaysia Pahang.

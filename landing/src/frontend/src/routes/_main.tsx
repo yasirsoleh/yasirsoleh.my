@@ -9,7 +9,6 @@ import { IconChevronDown, IconLogout, IconUser } from "@tabler/icons-react";
 import { modals } from "@mantine/modals";
 import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 import { useEffect, useState } from "react";
-import { extractTokenClaims } from "@/utils/token";
 
 export const Route = createFileRoute("/_main")({
   component: RouteComponent,
@@ -31,6 +30,31 @@ function RouteComponent() {
     setAuthToken(null);
     navigate({ to: "/" });
   };
+
+  // get data from /api/me
+  const [user, setUser] = useState<{
+    id: string;
+    email: string;
+    account_name: string;
+    photo_identifier: string | null;
+  } | null>(null);
+  useEffect(() => {
+    if (authToken) {
+      fetch("/api/me", {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      })
+        .then((res) => res.json())
+        .then((data) => setUser(data.data))
+        .catch((err) => {
+          // if 401, logout
+          if (err.response && err.response.status === 401) {
+            handleLogout();
+          }
+        });
+    }
+  }, [authToken]);
 
   return (
     <AppShell header={{ height: 70 }} padding="md">
@@ -164,7 +188,7 @@ function RouteComponent() {
               marginRight: "1rem",
             }}
           >
-            {authToken ? (
+            {user ? (
               <Menu>
                 <Menu.Target>
                   <div
@@ -180,12 +204,8 @@ function RouteComponent() {
                 </Menu.Target>
                 <Menu.Dropdown>
                   <div style={{ padding: "0.5rem" }}>
-                    <Text fw={500}>
-                      {extractTokenClaims(authToken)?.account_name || "Profile"}
-                    </Text>
-                    <Text>
-                      {extractTokenClaims(authToken)?.email || "Email"}
-                    </Text>
+                    <Text fw={500}>{user?.account_name || "Profile"}</Text>
+                    <Text>{user?.email || "Email"}</Text>
                   </div>
                   <Menu.Item
                     color="red"

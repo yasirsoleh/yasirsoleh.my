@@ -17,7 +17,7 @@ pub async fn create_account(
     }
 }
 
-#[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct Claims {
     pub sub: uuid::Uuid,
     pub exp: i64,
@@ -67,4 +67,24 @@ pub async fn login(
             axum::response::Json(serde_json::json!({"error": err.to_string()})),
         ),
     }
+}
+
+pub async fn me(
+    axum::extract::State(state): axum::extract::State<AppState>,
+    axum::extract::Extension(claims): axum::extract::Extension<crate::routes::accounts::Claims>,
+) -> impl axum::response::IntoResponse {
+    let account = match state.queries.me(claims.sub).await {
+        Ok(account) => account,
+        Err(err) => {
+            return (
+                axum::http::StatusCode::UNAUTHORIZED,
+                axum::response::Json(serde_json::json!({"error": err})),
+            );
+        }
+    };
+
+    (
+        axum::http::StatusCode::OK,
+        axum::response::Json(serde_json::json!({"data": account})),
+    )
 }
