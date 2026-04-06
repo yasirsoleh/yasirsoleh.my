@@ -1,6 +1,7 @@
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 // Import the generated route tree
 import { routeTree } from "@/routeTree.gen";
@@ -16,6 +17,7 @@ import { ModalsProvider } from "@mantine/modals";
 import { Notifications } from "@mantine/notifications";
 
 import reportWebVitals from "@/reportWebVitals.ts";
+import { AuthProvider } from "./store/auth";
 
 // Create a new router instance
 const router = createRouter({
@@ -34,19 +36,25 @@ declare module "@tanstack/react-router" {
   }
 }
 
+export const queryClient = new QueryClient();
+
 // Render the app
 const rootElement = document.getElementById("app");
 if (rootElement && !rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement);
   root.render(
     <StrictMode>
-      <MantineProvider>
-        <Notifications />
-        <ModalsProvider>
-          <RouterProvider router={router} />
-        </ModalsProvider>
-      </MantineProvider>
-    </StrictMode>
+      <AuthProvider>
+        <QueryClientProvider client={queryClient}>
+          <MantineProvider>
+            <Notifications />
+            <ModalsProvider>
+              <RouterProvider router={router} />
+            </ModalsProvider>
+          </MantineProvider>
+        </QueryClientProvider>
+      </AuthProvider>
+    </StrictMode>,
   );
 }
 

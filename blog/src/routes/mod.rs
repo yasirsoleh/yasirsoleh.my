@@ -36,11 +36,8 @@ pub fn setup_make_app(pool: sqlx::Pool<sqlx::Postgres>, jwt_secret: JwtSecret) -
         ));
 
     axum::Router::new()
-        .route(
-            "/api/accounts",
-            axum::routing::post(accounts::create_account),
-        )
         .route("/api/login", axum::routing::post(accounts::login))
+        .route("/api/register", axum::routing::post(accounts::register))
         .route("/api/posts", axum::routing::get(posts::list_posts))
         .route("/api/posts/{post_id}", axum::routing::get(posts::get_post))
         .merge(authenticated_routes)

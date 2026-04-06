@@ -14,7 +14,13 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { IconMail, IconLock, IconAlertCircle } from "@tabler/icons-react";
-import { useState } from "react";
+import useApi from "@/hooks/useApi";
+import { useAuth } from "@/store/auth";
+import { useMutation } from "@tanstack/react-query";
+
+interface Token {
+  token: string;
+}
 
 export const Route = createFileRoute("/_main/login")({
   component: LoginPage,
@@ -27,8 +33,19 @@ interface LoginForm {
 
 function LoginPage() {
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const api = useApi();
+  const auth = useAuth();
+
+  const loginMutation = useMutation<Token, Error, LoginForm>({
+    mutationFn: async (values: LoginForm) => {
+      let res = await api.post<Token>("/api/login", values);
+      return res;
+    },
+    onSuccess: (data) => {
+      auth.login(data.token);
+      navigate({ to: "/" });
+    },
+  });
 
   const form = useForm<LoginForm>({
     initialValues: {
@@ -49,44 +66,10 @@ function LoginPage() {
     },
   });
 
-  const handleSubmit = async (values: LoginForm) => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      const response = await fetch("/api/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(values),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Login failed");
-      }
-
-      const data = await response.json();
-
-      // Store token or user data as needed
-      if (data.token) {
-        localStorage.setItem("auth_token", data.token);
-      }
-
-      // Redirect to home page or dashboard
-      navigate({ to: "/", reloadDocument: true });
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
     <Container size="sm" py="xl">
       <Paper shadow="md" p="xl" radius="md" pos="relative">
-        <LoadingOverlay visible={loading} />
+        <LoadingOverlay visible={loginMutation.isPending} />
 
         <Stack gap="lg">
           <div style={{ textAlign: "center" }}>
@@ -96,18 +79,24 @@ function LoginPage() {
             <p>Sign in to your account</p>
           </div>
 
-          {error && (
+          {loginMutation.error && (
             <Alert
               icon={<IconAlertCircle size="1rem" />}
               title="Login Error"
               color="red"
               variant="light"
             >
-              {error}
+              {loginMutation.error instanceof Error
+                ? loginMutation.error.message
+                : String(loginMutation.error)}
             </Alert>
           )}
 
-          <form onSubmit={form.onSubmit(handleSubmit)}>
+          <form
+            onSubmit={form.onSubmit((values) =>
+              loginMutation.mutateAsync(values),
+            )}
+          >
             <Stack gap="md">
               <TextInput
                 label="Email"
@@ -125,8 +114,13 @@ function LoginPage() {
                 {...form.getInputProps("password")}
               />
 
-              <Button type="submit" fullWidth mt="md" disabled={loading}>
-                {loading ? "Signing in..." : "Sign In"}
+              <Button
+                type="submit"
+                fullWidth
+                mt="md"
+                disabled={loginMutation.isPending}
+              >
+                {loginMutation.isPending ? "Signing in..." : "Sign In"}
               </Button>
             </Stack>
           </form>

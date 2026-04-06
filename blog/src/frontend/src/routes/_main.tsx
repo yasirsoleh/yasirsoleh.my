@@ -4,57 +4,36 @@ import {
   Outlet,
   useNavigate,
 } from "@tanstack/react-router";
-import { AppShell, Text, Menu, Burger, Drawer, Button } from "@mantine/core";
+import { AppShell, Text, Menu, Button } from "@mantine/core";
 import { IconChevronDown, IconLogout, IconUser } from "@tabler/icons-react";
 import { modals } from "@mantine/modals";
-import { useDisclosure, useMediaQuery } from "@mantine/hooks";
-import { useEffect, useState } from "react";
+import useApi from "@/hooks/useApi";
+import { useAuth } from "@/store/auth";
+import { useQuery } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/_main")({
   component: RouteComponent,
 });
 
+type User = {
+  id: string;
+  email: string;
+  account_name: string;
+  photo_identifier: string | null;
+};
+
 function RouteComponent() {
-  const mobile = useMediaQuery("(max-width: 768px)");
-  const [opened, { toggle }] = useDisclosure(false);
-  const [authToken, setAuthToken] = useState<string | null>(null);
+  const api = useApi();
+  const auth = useAuth();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const token = localStorage.getItem("auth_token");
-    setAuthToken(token);
-  }, []);
-
-  const handleLogout = () => {
-    localStorage.removeItem("authToken"); // Changed from "auth_token" to "authToken"
-    setAuthToken(null);
-    navigate({ to: "/" });
-  };
-
-  // get data from /api/me
-  const [user, setUser] = useState<{
-    id: string;
-    email: string;
-    account_name: string;
-    photo_identifier: string | null;
-  } | null>(null);
-  useEffect(() => {
-    if (authToken) {
-      fetch("/api/me", {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
-      })
-        .then((res) => res.json())
-        .then((data) => setUser(data.data))
-        .catch((err) => {
-          // if 401, logout
-          if (err.response && err.response.status === 401) {
-            handleLogout();
-          }
-        });
-    }
-  }, [authToken]);
+  const { data: me } = useQuery<User>({
+    queryKey: ["user", auth.token],
+    queryFn: async () => {
+      return await api.request<User>("/api/me");
+    },
+    enabled: !!auth.token,
+  });
 
   return (
     <AppShell header={{ height: 70 }} padding="md">
@@ -82,7 +61,6 @@ function RouteComponent() {
                 marginLeft: "1rem",
               }}
             >
-              {mobile && <Burger opened={opened} onClick={toggle} mr={1} />}
               <Link to="/" style={{ textDecoration: "none" }}>
                 <Text
                   style={{ textDecoration: "none", color: "black" }}
@@ -94,91 +72,6 @@ function RouteComponent() {
             </div>
           </div>
 
-          {!mobile && (
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                flex: 1,
-                gap: "2rem",
-              }}
-            >
-              {/* Link to Home and Posts */}
-              <Link to="/" style={{ textDecoration: "none" }}>
-                <Text
-                  style={{ textDecoration: "none", color: "black" }}
-                  size="sm"
-                >
-                  Home
-                </Text>
-              </Link>
-              <Link to="/posts" style={{ textDecoration: "none" }}>
-                <Text
-                  style={{ textDecoration: "none", color: "black" }}
-                  size="sm"
-                >
-                  Posts
-                </Text>
-              </Link>
-              <a
-                href="https://github.com/yasirsoleh/yasirsoleh.my"
-                style={{ textDecoration: "none" }}
-              >
-                <Text
-                  style={{ textDecoration: "none", color: "black" }}
-                  size="sm"
-                >
-                  Source Code
-                </Text>
-              </a>
-            </div>
-          )}
-
-          <Drawer
-            opened={opened}
-            onClose={toggle}
-            title="Navigation"
-            padding="md"
-            size="md"
-          >
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: "0.5rem",
-              }}
-            >
-              <Link to="/" style={{ textDecoration: "none" }}>
-                <Text
-                  style={{ textDecoration: "none", color: "black" }}
-                  size="sm"
-                >
-                  Home
-                </Text>
-              </Link>
-              <Link to="/posts" style={{ textDecoration: "none" }}>
-                <Text
-                  style={{ textDecoration: "none", color: "black" }}
-                  size="sm"
-                >
-                  Posts
-                </Text>
-              </Link>
-              <a
-                href="https://github.com/yasirsoleh/yasirsoleh.my"
-                style={{ textDecoration: "none" }}
-              >
-                <Text
-                  style={{ textDecoration: "none", color: "black" }}
-                  size="sm"
-                >
-                  Source Code
-                </Text>
-              </a>
-            </div>
-          </Drawer>
-
           <div
             style={{
               display: "flex",
@@ -188,7 +81,7 @@ function RouteComponent() {
               marginRight: "1rem",
             }}
           >
-            {user ? (
+            {me ? (
               <Menu>
                 <Menu.Target>
                   <div
@@ -204,8 +97,8 @@ function RouteComponent() {
                 </Menu.Target>
                 <Menu.Dropdown>
                   <div style={{ padding: "0.5rem" }}>
-                    <Text fw={500}>{user?.account_name || "Profile"}</Text>
-                    <Text>{user?.email || "Email"}</Text>
+                    <Text fw={500}>{me?.account_name || "Profile"}</Text>
+                    <Text>{me?.email || "Email"}</Text>
                   </div>
                   <Menu.Item
                     color="red"
@@ -219,7 +112,9 @@ function RouteComponent() {
                           </Text>
                         ),
                         labels: { confirm: "Logout", cancel: "Cancel" },
-                        onConfirm: handleLogout,
+                        onConfirm: () => {
+                          auth.logout();
+                        },
                         confirmProps: { color: "red" },
                       });
                     }}

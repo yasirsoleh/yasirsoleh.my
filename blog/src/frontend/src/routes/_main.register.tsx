@@ -1,6 +1,5 @@
 import { useForm } from "@mantine/form";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
 import {
   Container,
   Paper,
@@ -21,10 +20,17 @@ import {
   IconMail,
   IconUser,
 } from "@tabler/icons-react";
+import useApi from "@/hooks/useApi";
+import { useAuth } from "@/store/auth";
+import { useMutation } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/_main/register")({
   component: Register,
 });
+
+interface Token {
+  token: string;
+}
 
 interface RegisterForm {
   name: string;
@@ -35,9 +41,25 @@ interface RegisterForm {
 
 function Register() {
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
+  const api = useApi();
+  const auth = useAuth();
+
+  const registerMutation = useMutation<Token, Error, RegisterForm>({
+    mutationFn: async (form: RegisterForm) => {
+      let res = await api.post<Token>("/api/register", {
+        account_name: form.name,
+        email: form.email,
+        password: form.password,
+      });
+      return res;
+    },
+    onSuccess: (data) => {
+      auth.login(data.token);
+      navigate({
+        to: "/",
+      });
+    },
+  });
 
   const form = useForm<RegisterForm>({
     initialValues: {
@@ -73,46 +95,7 @@ function Register() {
     },
   });
 
-  const handleSubmit = async (values: RegisterForm) => {
-    setLoading(true);
-    setError(null);
-    setSuccess(false);
-
-    try {
-      const response = await fetch("/api/accounts", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          account_name: values.name,
-          email: values.email,
-          password: values.password,
-        }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Registration failed");
-      }
-
-      setSuccess(true);
-
-      setTimeout(() => {
-        navigate({ to: "/login" });
-      }, 2000);
-    } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "An error occurred during registration"
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (success) {
+  if (registerMutation.isSuccess) {
     return (
       <Container size="sm" py="xl">
         <Paper shadow="md" p="xl" radius="md">
@@ -134,7 +117,7 @@ function Register() {
   return (
     <Container size="sm" py="xl">
       <Paper shadow="md" p="xl" radius="md" pos="relative">
-        <LoadingOverlay visible={loading} />
+        <LoadingOverlay visible={registerMutation.isPending} />
 
         <Stack gap="lg">
           <div style={{ textAlign: "center" }}>
@@ -144,18 +127,22 @@ function Register() {
             <p>Join us today and start sharing your thoughts</p>
           </div>
 
-          {error && (
+          {registerMutation.error && (
             <Alert
               icon={<IconAlertCircle size="1rem" />}
               title="Registration Error"
               color="red"
               variant="light"
             >
-              {error}
+              {registerMutation.error.message}
             </Alert>
           )}
 
-          <form onSubmit={form.onSubmit(handleSubmit)}>
+          <form
+            onSubmit={form.onSubmit((values) =>
+              registerMutation.mutateAsync(values),
+            )}
+          >
             <Stack gap="md">
               <TextInput
                 label="Full Name"
@@ -190,8 +177,15 @@ function Register() {
                 {...form.getInputProps("confirmPassword")}
               />
 
-              <Button type="submit" fullWidth mt="md" disabled={loading}>
-                {loading ? "Creating Account..." : "Create Account"}
+              <Button
+                type="submit"
+                fullWidth
+                mt="md"
+                disabled={registerMutation.isPending}
+              >
+                {registerMutation.isPending
+                  ? "Creating Account..."
+                  : "Create Account"}
               </Button>
             </Stack>
           </form>

@@ -14,15 +14,21 @@ import {
   IconDeviceFloppy,
 } from "@tabler/icons-react";
 import { useState } from "react";
+import useApi from "@/hooks/useApi";
+import { useMutation } from "@tanstack/react-query";
 
-export const Route = createFileRoute("/_main/posts/create")({
+interface CreatePostForm {
+  content: string;
+}
+
+export const Route = createFileRoute("/_main/create")({
   component: PostCreate,
 });
 
 function PostCreate() {
   const navigate = useNavigate();
+  const api = useApi();
   const [content, setContent] = useState<string>("");
-  const [error, setError] = useState<string | null>(null);
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -39,28 +45,13 @@ function PostCreate() {
     },
   });
 
-  const token = localStorage.getItem("auth_token");
-
-  const onSave = async () => {
-    try {
-      const response = await fetch("/api/posts", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ contents: content }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to save post");
-      }
-
-      navigate({ to: "/posts" });
-    } catch (error) {
-      setError("Failed to save post");
-    }
-  };
+  const createMutation = useMutation<void, Error, CreatePostForm>({
+    mutationFn: async (values: CreatePostForm) =>
+      api.post("/api/posts", values),
+    onSuccess: () => {
+      navigate({ to: "/" });
+    },
+  });
 
   return (
     <Container size="md" py="xl">
@@ -73,7 +64,7 @@ function PostCreate() {
         }}
       >
         <Button
-          onClick={() => navigate({ to: "/posts" })}
+          onClick={() => navigate({ to: "/" })}
           leftSection={<IconArrowLeft size={20} />}
           variant="subtle"
         >
@@ -83,7 +74,7 @@ function PostCreate() {
         <Title order={1}>New Post</Title>
       </div>
 
-      {error && (
+      {createMutation.error && (
         <Alert
           icon={<IconAlertCircle size={20} />}
           title="Error"
@@ -91,7 +82,7 @@ function PostCreate() {
           variant="light"
           mb="md"
         >
-          {error}
+          {createMutation.error.message}
         </Alert>
       )}
 
@@ -150,7 +141,7 @@ function PostCreate() {
           width: "100%",
         }}
         leftSection={<IconDeviceFloppy size={20} />}
-        onClick={onSave}
+        onClick={() => createMutation.mutate({ content })}
       >
         Save
       </Button>

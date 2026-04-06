@@ -20,6 +20,7 @@
     "@mantine/tiptap": "^8.2.7",
     "@tabler/icons-react": "^3.34.1",
     "@tanstack/react-devtools": "^0.2.2",
+    "@tanstack/react-query": "^5.96.2",
     "@tanstack/react-router": "^1.130.2",
     "@tanstack/react-router-devtools": "^1.131.5",
     "@tanstack/router-plugin": "^1.121.2",

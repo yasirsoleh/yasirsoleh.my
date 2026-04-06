@@ -15,7 +15,7 @@ import {
 } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 
-export const Route = createFileRoute("/_main/posts/$postId/edit")({
+export const Route = createFileRoute("/_main/$postId/edit")({
   component: PostEdit,
 });
 
@@ -63,7 +63,7 @@ function PostEditor({
         throw new Error("Failed to save post");
       }
 
-      navigate({ to: "/posts" });
+      navigate({ to: "/" });
     } catch (error) {
       setError("Failed to save post");
     }
@@ -174,7 +174,7 @@ function PostEdit() {
         }}
       >
         <Button
-          onClick={() => navigate({ to: "/posts" })}
+          onClick={() => navigate({ to: "/" })}
           leftSection={<IconArrowLeft size={20} />}
           variant="subtle"
         >
