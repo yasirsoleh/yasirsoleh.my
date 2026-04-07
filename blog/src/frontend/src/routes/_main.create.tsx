@@ -46,8 +46,10 @@ function PostCreate() {
   });
 
   const createMutation = useMutation<void, Error, CreatePostForm>({
-    mutationFn: async (values: CreatePostForm) =>
-      api.post("/api/posts", values),
+    mutationFn: async (values: CreatePostForm) => {
+      let res = await api.post("/api/posts", values);
+      return res;
+    },
     onSuccess: () => {
       navigate({ to: "/" });
     },

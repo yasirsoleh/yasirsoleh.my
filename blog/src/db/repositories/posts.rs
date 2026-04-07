@@ -19,7 +19,7 @@ pub struct PostsList {
 
 #[derive(serde::Deserialize)]
 pub struct CreatePostParams {
-    pub contents: String,
+    pub content: String,
 }
 
 #[derive(serde::Deserialize)]
@@ -175,7 +175,7 @@ impl Queries {
             join accounts a on p.account_id = a.id
             "#,
             account_id,
-            params.contents,
+            params.content,
         )
         .fetch_one(&self.pool)
         .await
